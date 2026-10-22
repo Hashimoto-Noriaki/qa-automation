@@ -1,0 +1,17 @@
+{
+  "name": "playwright-next-article-share-app",
+  "version": "1.0.0",
+  "description": "External E2E tests for next-article-share-app",
+  "scripts": {
+    "test": "playwright test",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^26.6.5"
+  }
+}
