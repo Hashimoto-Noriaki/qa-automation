@@ -19,9 +19,10 @@
 | 【RedAmon】計画・安全境界の策定             | ✅ 完了（[redamon.md](./redamon.md)）                                  |
 | 【RedAmon】的アプリ（VAmPI）をローカル起動  | ✅ 完了（脆弱版 `127.0.0.1:18002` / 安全版 `:18001`）                  |
 | 【RedAmon】採点用の正解リスト作成           | ✅ 完了（[vampi-known-vulns.md](./vampi-known-vulns.md)、脆弱性 9 件） |
-| 【RedAmon】本体の実行・採点                 | ⬜ 未（次フェーズ）                                                    |
+| 【RedAmon】導入前チェック（必要スペック）   | ⚠ この端末は要件未達（ディスク/Docker 版）。実行は専用環境が前提       |
+| 【RedAmon】本体の実行・採点                 | ⬜ 保留（専用サーバー/VM 待ち）                                        |
 | 【promptfoo】計画・安全境界の策定           | ✅ 完了（[promptfoo.md](./promptfoo.md)）                              |
-| 【promptfoo】練習プロンプト作成・実行・採点 | ⬜ 未（次フェーズ）                                                    |
+| 【promptfoo】練習プロンプト作成・実行・採点 | ⬜ 未（次フェーズ・先行予定）                                          |
 
 > 現状は両 PoC とも「安全に・採点つきで評価する**土台（計画）が整った**」段階。
 > RedAmon は的アプリ＋正解リストまで用意済み。各ツールの検出精度・コスト・CI 適合性はこれから実測する。
@@ -48,12 +49,13 @@
 
 - [ ] Anthropic API キー発行＋**月の利用上限設定**（例 $10）。安い `claude-haiku-5-5` から試す
 
-RedAmon:
+RedAmon（この端末では実行保留。詳細は [redamon.md](./redamon.md) の「導入前チェック結果」）:
 
-- [ ] RedAmon 本家を `poc/tools/redamon` に clone →中身確認→ README どおり起動
-- [ ] 脆弱版（18002）に対して実行し、正解リストと突き合わせて検出率/誤検知を採点
+- [x] RedAmon 本家を clone →中身確認→必要スペックを確認
+- [ ] **実行用の専用環境を確保**（ディスク 80GB+・Docker 28+・RAM 4GB+ のサーバー/VM）
+- [ ] 環境確保後に脆弱版（18002）へ実行し、正解リストと突き合わせて検出率/誤検知を採点
 
-promptfoo:
+promptfoo（軽量・API のみ。先行して実測する）:
 
 - [ ] Node/npx 確認、練習プロンプトの題材決定
 - [ ] `poc/promptfoo/` に `promptfooconfig.yaml` を用意し、eval → redteam を実行
