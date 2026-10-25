@@ -1,0 +1,6 @@
+# PoC の攻撃対象アプリ（外部リポジトリを clone してくる練習台。自リポジトリでは追跡しない）
+poc/targets/
+
+# Playwright 等のテスト出力
+test-results/
+playwright-report/
