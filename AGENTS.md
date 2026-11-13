@@ -37,6 +37,20 @@ BASE_URL=https://example.com/ npm test           # 接続先の切り替え
 
 `playwright-next-article-share-app` の既定の接続先は `http://localhost:3000` なので、ローカル実行には別リポジトリのアプリ（docker compose + `npm run dev`）の起動が必要。
 
+### 対象環境（next-article-share-app）
+
+ホスティングは Vercel（ステージングと本番は別プロジェクト、DB は Neon のブランチで分離）。Cloud Run への移行も検討中のため、テストはホスティングに依存させず `BASE_URL` だけで切り替える。
+
+| 環境 | URL | 流すテスト | コマンド例 |
+| --- | --- | --- | --- |
+| ローカル | `http://localhost:3000` | 全テスト | `npm test` |
+| ステージング | `https://article-share-stg.vercel.app` | 全テスト（書き込みあり） | `BASE_URL=https://article-share-stg.vercel.app npm test` |
+| 本番 | （未共有） | `@smoke` のみ | `BASE_URL=<本番> npm run test:smoke` |
+
+- アプリ側の `.env` が Neon（ステージング / 本番の DB）を指している可能性がある。ユーザーの指示なしにアプリをローカル起動してテストを流さない。
+- 本番に向けて書き込み系テストを流さない。書き込み系テストは `fixtures/index.ts` の `WRITABLE_HOSTS`（許可制）に無いホストでは自動でスキップされる。許可リストに本番ホストを足さない。
+- デプロイ契機: アプリ側で `master` への push → ステージング（`deploy-staging.yml`）、GitHub Release の公開 → 本番（`deploy-prod.yml`）。
+
 ## 外部 E2E の設計（next-article-share-app）
 
 詳細は `poc/next-article-share-app/poc-plan.md`。URL だけを前提にしたブラックボックステストで、同じテストをローカル → ステージング → 本番で流用する。
@@ -46,9 +60,9 @@ BASE_URL=https://example.com/ npm test           # 接続先の切り替え
 - 本番では `@smoke` のみを流すため、`@smoke` には書き込みをするテストを入れない。タグは `{ tag: '@smoke' }` の形式で付ける。
 - ステージング以降は DB を捨てられない。作成データには `e2e-` プレフィックスを付け、`afterEach` / fixture で必ず削除する。
 - 対象外: パスワードリセット（Gmail）、画像アップロード（Cloudinary）、OAuth（GitHub / Google）。
-- タイムアウトが長いのは Cloud Run のコールドスタート対策。
+- タイムアウトが長いのはサーバーレス環境（Vercel / Cloud Run）のコールドスタート対策。
 
-poc-plan.md の「ディレクトリ構成（案）」は `poc/next-article-share-app/` 配下を想定しているが、実装は `common/playwright-next-article-share-app/` にある。現在実装済みなのは `@smoke` のシナリオ 1〜3 のみで、fixture（シナリオ 4・5）と GitHub Actions は未着手。
+poc-plan.md の「ディレクトリ構成（案）」は `poc/next-article-share-app/` 配下を想定しているが、実装は `common/playwright-next-article-share-app/` にある。実装済みなのは `@smoke` のシナリオ 1〜3（`tests/smoke/`）と、fixture を使うシナリオ 4・5（`tests/regression/`）。書き込み系テストは `fixtures/index.ts` の `test` を使う（`testUser` は後片付けで退会させ、記事も一緒に削除される）。書き込み系は許可したホスト（`WRITABLE_HOSTS`）でのみ動く。GitHub Actions は未着手。
 
 ## playwright-ec2 の注意点
 

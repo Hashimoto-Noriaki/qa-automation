@@ -6,3 +6,6 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# 環境変数（本番 URL などを誤ってコミットしない）
+.env

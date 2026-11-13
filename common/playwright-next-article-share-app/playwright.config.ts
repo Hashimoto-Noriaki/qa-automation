@@ -5,7 +5,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests',
-  /* Cloud Run のコールドスタートを考慮して長めにする */
+  /* サーバーレス環境（Vercel / Cloud Run）のコールドスタートを考慮して長めにする */
   timeout: 60_000,
   expect: { timeout: 10_000 },
   /* Run tests in files in parallel */
@@ -24,8 +24,8 @@ export default defineConfig({
     baseURL: process.env.BASE_URL ?? 'http://localhost:3000',
     navigationTimeout: 30_000,
 
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    /* 失敗したテストのトレースを残す（デプロイ環境での flaky の調査用）. See https://playwright.dev/docs/trace-viewer */
+    trace: 'retain-on-failure',
   },
 
   /* Configure projects for major browsers */
