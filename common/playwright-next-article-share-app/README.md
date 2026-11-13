@@ -18,6 +18,23 @@ npx playwright install chromium
 BASE_URL=https://example.com/ npm test
 ```
 
+## 環境ごとの実行
+
+| 環境 | 実行するテスト | コマンド例 |
+| --- | --- | --- |
+| ローカル / ステージング | 全テスト（書き込みあり） | `BASE_URL=https://<stg> npm test` |
+| 本番 | `@smoke` のみ | `BASE_URL=https://<prod> npm run test:smoke` |
+
+書き込み系テスト（fixture の `testUser` を使うテスト）は、`fixtures/index.ts` の `WRITABLE_HOSTS`（localhost とステージング）に無いホストではスキップされる。本番で `npm test` を流しても書き込みは起きない（`@smoke` の付け忘れ対策）。
+
+## テストデータと後片付け
+
+- 書き込み系テストは `fixtures/index.ts` の `test` を使う
+  - `testUser`: `e2e-` で始まるメールアドレスの使い捨てユーザー。テスト後、登録済みなら別のブラウザコンテキストでログインして退会させる
+  - `loggedInPage`: `testUser` で新規登録してログインした状態の `page`
+- 退会すると投稿した記事もアプリ側で削除されるため、記事の後片付けはユーザーの退会で済ませる
+- テストが途中で失敗しても fixture の後片付けは実行される。プロセスが強制終了された場合などはデータが残るので、`e2e-` で始めて識別できるようにしている
+
 ## コマンド
 
 | コマンド | 内容 |
@@ -37,6 +54,9 @@ BASE_URL=https://example.com/ npm test
 playwright-next-article-share-app/
   playwright.config.ts   # baseURL・タイムアウト・ブラウザ・レポーター設定
   .env.example           # 環境変数のサンプル
+  fixtures/              # testUser（作成＋退会）・loggedInPage
+  helpers/               # 画面操作（signup / login / logout / withdraw / 記事作成）
   tests/
     smoke/               # @smoke: 本番でも流せる読み取り系
+    regression/          # 書き込みあり: ローカル・ステージングのみ
 ```
