@@ -3,6 +3,8 @@
 [next-article-share-app](https://github.com/Hashimoto-Noriaki/next-article-share-app) の外部 E2E テストを Playwright で自動化するプロジェクト。
 方針は [PoC 計画](../../poc/next-article-share-app/poc-plan.md) を参照。
 
+テストケースの一覧（どれを自動化するか・実装状況）は **[テストケース台帳](https://claude.ai/artifact/MgNuPUxHXpuNYDJKb2Zy83)** で管理している。テスト名は `[ケースID] タイトル` にする（例: `[AUTH-002] 誤った認証情報でログインするとエラーが表示される`）。
+
 ## セットアップ
 
 ```bash
