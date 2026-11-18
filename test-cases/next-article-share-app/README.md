@@ -6,12 +6,6 @@ QA・エンジニア・PdM・PM が書く前提。
 - **正本はテストケース台帳（claude.ai の Artifact）**: https://claude.ai/artifact/MgNuPUxHXpuNYDJKb2Zy83
   - ケースの追加・編集、レビュー（採用 / 要修正 / 不要）、リグレッション・UAT の実施記録はここで行う
 
-| 自動化マップ | ケース一覧 |
-| --- | --- |
-| ![自動化マップ](../../images/board-map.png) | ![ケース一覧](../../images/board-list.png) |
-
-画像は撮影時点のもの。件数や中身の最新は台帳を見る。
-
 関連:
 
 - 自動テストの実装: [`common/playwright-next-article-share-app`](../../common/playwright-next-article-share-app)
