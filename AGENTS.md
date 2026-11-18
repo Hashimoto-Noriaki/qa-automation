@@ -9,6 +9,7 @@
 - `common/` — 独立した Playwright プロジェクト群。ルートに `package.json` は無く（ワークスペースでもない）、コマンドは各プロジェクトのディレクトリで実行する。
   - `playwright-ec2` — デモ EC サイト（tutorialsninja）の E2E
   - `playwright-next-article-share-app` — 別リポジトリ [next-article-share-app](https://github.com/Hashimoto-Noriaki/next-article-share-app) の外部 E2E
+- `test-cases/` — アプリごとのリグレッションテストケースの運用ルールと画面イメージ。ケースの正本はリポジトリではなく claude.ai の Artifact（テストケース台帳。URL は各 `test-cases/<アプリ名>/README.md`）。Playwright のテスト名は `[ケースID] タイトル` にする。
 - `poc/` — 計画書と評価記録。セキュリティ系ツールの評価（`poc/docs/`）と、外部 E2E の計画（`poc/next-article-share-app/poc-plan.md`）。
   - `poc/targets/`, `poc/tools/` は clone した外部コードの置き場で git 管理外。リポジトリに取り込まない。
 
