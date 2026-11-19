@@ -51,7 +51,7 @@ BASE_URL=https://article-share-stg.vercel.app npm test
 **起動前に、アプリ側の `.env` の `DATABASE_URL` がローカルの DB（`localhost:5432`）を指しているか必ず確認する。** Neon（`*.neon.tech`。ステージング / 本番の DB）を指したまま起動すると、`localhost` 向けのテスト（書き込みあり）がその DB に `e2e-` ユーザーや記事を作る。
 
 ```bash
-# アプリのリポジトリで（next-app-router-share-app/）
+# アプリのリポジトリのルートで
 docker compose up db -d     # DB だけ起動
 npx prisma migrate dev      # DB が空のときだけ。テーブルを作る
 npm run dev                 # http://localhost:3000 で起動

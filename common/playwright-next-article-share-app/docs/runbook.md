@@ -15,6 +15,8 @@
 | 直近のレポートを開く | `npm run report` |
 | trace を開く | `npx playwright show-trace test-results/<テスト>/trace.zip` |
 
+注: 既定の reporter は html。`--reporter=list` を付けて実行すると HTML レポートは生成されないため、その実行結果は `npm run report` で開けない（開けるのは直近の html reporter の実行分）。レポートを見たいときは `--reporter=list` を外して実行する。
+
 ## 守ること
 
 - **本番では `@smoke` だけを流す**（`npm run test:smoke`）。`npm test` を本番に向けない。書き込み系は `WRITABLE_HOSTS` で自動スキップされるが、それは付け忘れ対策の保険であって、運用で頼らない
