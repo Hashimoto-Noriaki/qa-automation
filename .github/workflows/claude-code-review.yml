@@ -18,6 +18,10 @@ jobs:
     #   github.event.pull_request.user.login == 'new-developer' ||
     #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
 
+    # claude[bot] の push（@claude によるレビュー提案の反映など）ではスキップする。
+    # claude-code-action はボットが起動したワークフローを拒否して失敗扱いになるため（#33）
+    if: github.actor != 'claude[bot]'
+
     runs-on: ubuntu-latest
     permissions:
       contents: read
