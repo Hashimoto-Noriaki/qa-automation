@@ -5,12 +5,19 @@
 
 テストケースの一覧（どれを自動化するか・実装状況）は **[テストケース台帳](https://claude.ai/artifact/MgNuPUxHXpuNYDJKb2Zy83)** で管理している。テスト名は `[ケースID] タイトル` にする（例: `[AUTH-002] 誤った認証情報でログインするとエラーが表示される`）。
 
+## ドキュメント
+
+- [セットアップ](docs/setup.md): 初回の環境構築、接続先ごとの準備、動作確認
+- [runbook](docs/runbook.md): 環境別の実行手順、リリース前後のリグレッション、失敗時の切り分け、データが残ったときの対処
+
 ## セットアップ
 
 ```bash
 npm install
 npx playwright install chromium
 ```
+
+詳細は [docs/setup.md](docs/setup.md)。
 
 ## 接続先
 
@@ -104,7 +111,8 @@ test('記事を作成できる', async ({ loggedInPage: page }) => {
 ```text
 playwright-next-article-share-app/
   playwright.config.ts   # baseURL・タイムアウト・ブラウザ・レポーター設定
-  .env.example           # 環境変数のサンプル
+  .env.example           # 環境変数のサンプル（自動では読み込まれない）
+  docs/                  # setup.md・runbook.md
   fixtures/              # テストデータの用意と後片付け（testUser・loggedInPage）
   helpers/               # 画面操作の関数（認証・記事）
   tests/
