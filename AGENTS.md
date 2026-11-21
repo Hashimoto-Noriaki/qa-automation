@@ -9,7 +9,7 @@
 - `e2e/` — 独立した Playwright プロジェクト群。ルートに `package.json` は無く（ワークスペースでもない）、コマンドは各プロジェクトのディレクトリで実行する。
   - `playwright-ec2` — デモ EC サイト（tutorialsninja）の E2E
   - `playwright-next-article-share-app` — 別リポジトリ [next-article-share-app](https://github.com/Hashimoto-Noriaki/next-article-share-app) の外部 E2E
-- `test-cases/` — アプリごとのリグレッションテストケースの運用ルールと画面イメージ。ケースの正本はリポジトリではなく claude.ai の Artifact（テストケース台帳。URL は各 `test-cases/<アプリ名>/README.md`）。Playwright のテスト名は `[ケースID] タイトル` にする。
+- `e2e/<プロジェクト>/test-management/` — テストケースの運用ルール（`README.md`）と、機能ごとの `<機能>/TEST_CASE_ID_REGISTRY.md`（ケース ID と自動テストの対応表）。ケースの中身の正本はリポジトリではなく claude.ai の Artifact（テストケース台帳。URL は `test-management/README.md`。いずれスプレッドシートに移す）。自動化の状況の正本は registry で、台帳の `automation_status` は更新しない。Playwright のテスト名は `[ケースID] タイトル` にし、テストを足す・消す・移す PR では同じ registry も直す。
 - `poc/` — 計画書と評価記録。セキュリティ系ツールの評価（`poc/docs/`）と、外部 E2E の計画（`poc/next-article-share-app/poc-plan.md`）。
   - `poc/targets/`, `poc/tools/` は clone した外部コードの置き場で git 管理外。リポジトリに取り込まない。
 

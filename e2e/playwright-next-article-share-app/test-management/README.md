@@ -1,15 +1,19 @@
-# next-article-share-app リグレッションテストケース
+# next-article-share-app のテスト管理
 
-[next-article-share-app](https://github.com/Hashimoto-Noriaki/next-article-share-app) のリグレッションテスト・UAT のテストケース一覧。
-QA・エンジニア・PdM・PM が書く前提。
+[next-article-share-app](https://github.com/Hashimoto-Noriaki/next-article-share-app) のリグレッションテスト・UAT のテストケースの運用ルールと、ケース ID と自動テストの対応表（registry）。
+ケースは QA・エンジニア・PdM・PM が書く前提。
 
-- **正本はテストケース台帳（claude.ai の Artifact）**: https://claude.ai/artifact/MgNuPUxHXpuNYDJKb2Zy83
-  - ケースの追加・編集、レビュー（採用 / 要修正 / 不要）、リグレッション・UAT の実施記録はここで行う
+情報ごとに正本を 1 か所にする。
+
+| 情報 | 正本 |
+| --- | --- |
+| ケースの中身（ID・タイトル・手順・期待結果・優先度・stg / prod）、レビュー、リグレッション・UAT の実施記録 | **テストケース台帳（claude.ai の Artifact）**: https://claude.ai/artifact/MgNuPUxHXpuNYDJKb2Zy83 （いずれスプレッドシートに移す） |
+| 自動テストの対応（どのケースをどのファイルで自動化したか・状態） | このディレクトリの `<機能>/TEST_CASE_ID_REGISTRY.md`（[下記](#registry)） |
 
 関連:
 
-- 自動テストの実装: [`e2e/playwright-next-article-share-app`](../../e2e/playwright-next-article-share-app)
-- 外部 E2E の方針: [`poc/next-article-share-app/poc-plan.md`](../../poc/next-article-share-app/poc-plan.md)
+- 自動テストの実装: [`playwright-next-article-share-app`](..)
+- 外部 E2E の方針: [`poc/next-article-share-app/poc-plan.md`](../../../poc/next-article-share-app/poc-plan.md)
 
 ## 列の意味
 
@@ -25,7 +29,7 @@ QA・エンジニア・PdM・PM が書く前提。
 | `stg` | ステージングでの実施方法（下記） |
 | `prod` | 本番での実施方法（下記） |
 | `reason` | 手動・対象外にした理由、注意点 |
-| `automation_status` | 自動テストの実装状況（`実装済` / `未実装` / `-`: 自動化しない） |
+| `automation_status` | 使わない。自動テストの実装状況は registry で管理する（台帳の値は更新しない） |
 
 ### `stg` / `prod` の値
 
@@ -71,7 +75,46 @@ test('[AUTH-002] 誤った認証情報でログインするとエラーが表示
 npx playwright test -g "ART-003"   # ID で 1 件だけ実行
 ```
 
-自動テストを実装したら `automation_status` を `実装済` にする。
+自動テストを実装したら、registry の状態を `実装済` にする（台帳の `automation_status` は更新しない）。
+
+## registry
+
+ケース ID と自動テストの対応表。
+
+機能（台帳の `area`）ごとにディレクトリを作り、`TEST_CASE_ID_REGISTRY.md` を置く。ケースの中身（手順・期待結果）は書かない。
+
+| ディレクトリ | 領域 | ID のプレフィックス |
+| --- | --- | --- |
+| [`auth/`](auth/TEST_CASE_ID_REGISTRY.md) | 認証 | `AUTH` |
+| [`static/`](static/TEST_CASE_ID_REGISTRY.md) | 静的ページ | `STC` |
+
+ほかの領域は、最初のケースを自動化するときにディレクトリを作り、この表に足す。
+
+### 列
+
+| 列 | 内容 |
+| --- | --- |
+| No. | 機能内の通し番号（表の行の順番）。ID の連番とは別 |
+| テストケース ID | 台帳の `id`。テスト名の `[ID]` と一致させる |
+| 状態 | 下記 |
+| フローファイル | そのケースを自動化したファイル（プロジェクトのディレクトリからの相対パス）。未実装なら `-` |
+| 自動化のメモ | タグ（`@smoke` など）、使っている fixture、保留・対象外の理由など |
+
+### 状態
+
+| 値 | 意味 |
+| --- | --- |
+| `未着手` | 自動化する予定だが、まだ書いていない |
+| `実装中` | 書いている途中（PR がマージされていない） |
+| `実装済` | テストがあり、CI / `run.sh` で流れる |
+| `保留` | 自動化する予定だが止めている（理由をメモに書く） |
+| `対象外` | 自動化しない（理由をメモに書く） |
+
+### 更新のルール
+
+- テストを足す・消す・ファイルを移す PR で、同じ registry も直す
+- 一度載せた行は消さない。ケースが廃止になったら状態を `対象外` にし、メモに「廃止」と書く
+- ID が振られていないテスト（`check.sh` の [4/4] で警告が出るもの）は載せられない。先に台帳で ID を振り、テスト名を `[ID] タイトル` にする
 
 ## 運用
 
