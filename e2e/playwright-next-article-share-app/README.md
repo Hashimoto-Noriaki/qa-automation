@@ -22,10 +22,21 @@ BASE_URL=https://example.com/ npm test
 
 ## 環境ごとの実行
 
-| 環境 | 実行するテスト | コマンド例 |
+`scripts/run.sh` に環境名を渡すと、接続先と実行するテストが決まる。2 つ目以降の引数は `playwright test` にそのまま渡す。
+
+| 環境 | 実行するテスト | コマンド |
 | --- | --- | --- |
-| ローカル / ステージング | 全テスト（書き込みあり） | `BASE_URL=https://<stg> npm test` |
-| 本番 | `@smoke` のみ | `BASE_URL=https://<prod> npm run test:smoke` |
+| ローカル | 全テスト（書き込みあり） | `./scripts/run.sh local` |
+| ステージング | 全テスト（書き込みあり） | `./scripts/run.sh stg` |
+| 本番 | `@smoke` のみ（スクリプトが必ず `--grep @smoke` を付ける） | `PROD_URL=https://<prod> ./scripts/run.sh prod` |
+
+```bash
+./scripts/run.sh stg -g "AUTH-"     # ステージングで AUTH のケースだけ
+./scripts/run.sh local --headed     # ブラウザ表示あり
+```
+
+- 本番の URL はリポジトリに書かない。環境変数 `PROD_URL` で渡すか、`.env`（git 管理外。`.env.example` をコピーして作る）に書く
+- スクリプトを使わずに `BASE_URL=... npm test` で直接実行してもよい
 
 書き込み系テスト（fixture の `testUser` を使うテスト）は、`fixtures/index.ts` の `WRITABLE_HOSTS`（localhost とステージング）に無いホストではスキップされる。本番で `npm test` を流しても書き込みは起きない（`@smoke` の付け忘れ対策）。
 
@@ -90,6 +101,8 @@ test('記事を作成できる', async ({ loggedInPage: page }) => {
 
 | コマンド | 内容 |
 | --- | --- |
+| `./scripts/run.sh <local\|stg\|prod>` | 環境を指定して実行（[環境ごとの実行](#環境ごとの実行)） |
+| `./scripts/check.sh`（`npm run check`） | テストを流す前の静的チェック（下記） |
 | `npm test` | 全テストをヘッドレスで実行 |
 | `npm run test:smoke` | `@smoke` タグのテストだけ実行（本番向け） |
 | `npm run test:ui` | UI モードで起動（テストの選択・デバッグ） |
@@ -99,12 +112,29 @@ test('記事を作成できる', async ({ loggedInPage: page }) => {
 
 その他の Playwright CLI は [playwright-ec2 の README](../playwright-ec2/README.md#playwright-cli) を参照。
 
+### check.sh のチェック内容
+
+アプリには接続しないので、どの環境でも数秒で終わる。テストを書いたら PR を出す前に流す。
+
+| # | チェック | 結果 |
+| --- | --- | --- |
+| 1 | 型チェック（`tsc --noEmit`） | 型エラーがあればエラー |
+| 2 | `test.only` / `describe.only` の残り | 残っていればエラー |
+| 3 | `tests/smoke/` が `fixtures`（書き込み系）を import していないか | import していればエラー（smoke は本番で流すため） |
+| 4 | テスト名が `[ケースID] ` で始まっているか | ID が無ければ警告（ID 未採番のテストがあるため、今はエラーにしない） |
+
+エラーが 1 件でもあれば終了コード 1 で終わる。
+
 ## ディレクトリ構成
 
 ```text
 playwright-next-article-share-app/
   playwright.config.ts   # baseURL・タイムアウト・ブラウザ・レポーター設定
+  tsconfig.json          # 型チェック（check.sh）用の設定
   .env.example           # 環境変数のサンプル
+  scripts/
+    run.sh               # 環境を指定してテストを実行
+    check.sh             # 静的チェック（型・test.only・smoke の書き込み・ケース ID）
   fixtures/              # テストデータの用意と後片付け（testUser・loggedInPage）
   helpers/               # 画面操作の関数（認証・記事）
   tests/

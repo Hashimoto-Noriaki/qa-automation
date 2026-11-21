@@ -13,7 +13,7 @@
 - `poc/` — 計画書と評価記録。セキュリティ系ツールの評価（`poc/docs/`）と、外部 E2E の計画（`poc/next-article-share-app/poc-plan.md`）。
   - `poc/targets/`, `poc/tools/` は clone した外部コードの置き場で git 管理外。リポジトリに取り込まない。
 
-lint・ビルド・型チェックのスクリプトと CI（`.github/`）は現時点で存在しない。
+lint・ビルドのスクリプトは無い。`playwright-next-article-share-app` には型チェックなどの静的チェック `scripts/check.sh` と、環境を指定して実行する `scripts/run.sh` がある。
 
 ## コマンド
 
@@ -26,6 +26,8 @@ npm test                                         # 全テスト（ヘッドレ�
 npm run test:ui                                  # UI モード
 npm run report                                   # 直近の HTML レポート
 npm run test:smoke                               # @smoke のみ（next-article-share-app のみ）
+./scripts/check.sh                               # 静的チェック（next-article-share-app のみ）
+./scripts/run.sh <local|stg|prod>                # 環境を指定して実行（next-article-share-app のみ。prod は @smoke のみ）
 
 npx playwright test tests/smoke/auth.spec.ts     # ファイル指定
 npx playwright test -g "テスト名の一部"           # テスト名で絞り込み
