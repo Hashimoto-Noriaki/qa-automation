@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import environments from './environments.json';
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -21,7 +22,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* 接続先は BASE_URL で切り替える（ローカル → ステージング → 本番） */
-    baseURL: process.env.BASE_URL ?? 'http://localhost:3000',
+    baseURL: process.env.BASE_URL ?? environments.local,
     navigationTimeout: 30_000,
 
     /* 失敗したテストのトレースを残す（デプロイ環境での flaky の調査用）. See https://playwright.dev/docs/trace-viewer */

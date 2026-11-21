@@ -9,11 +9,11 @@
 - `e2e/` — 独立した Playwright プロジェクト群。ルートに `package.json` は無く（ワークスペースでもない）、コマンドは各プロジェクトのディレクトリで実行する。
   - `playwright-ec2` — デモ EC サイト（tutorialsninja）の E2E
   - `playwright-next-article-share-app` — 別リポジトリ [next-article-share-app](https://github.com/Hashimoto-Noriaki/next-article-share-app) の外部 E2E
-- `test-cases/` — アプリごとのリグレッションテストケースの運用ルールと画面イメージ。ケースの正本はリポジトリではなく claude.ai の Artifact（テストケース台帳。URL は各 `test-cases/<アプリ名>/README.md`）。Playwright のテスト名は `[ケースID] タイトル` にする。
+- `e2e/<プロジェクト>/test-management/` — テストケースの運用ルール（`README.md`）と、機能ごとの `<機能>/TEST_CASE_ID_REGISTRY.md`（ケース ID と自動テストの対応表）。ケースの中身の正本はリポジトリではなく claude.ai の Artifact（テストケース台帳。URL は `test-management/README.md`。いずれスプレッドシートに移す）。自動化の状況の正本は registry で、台帳の `automation_status` は更新しない。Playwright のテスト名は `[ケースID] タイトル` にし、テストを足す・消す・移す PR では同じ registry も直す。
 - `poc/` — 計画書と評価記録。セキュリティ系ツールの評価（`poc/docs/`）と、外部 E2E の計画（`poc/next-article-share-app/poc-plan.md`）。
   - `poc/targets/`, `poc/tools/` は clone した外部コードの置き場で git 管理外。リポジトリに取り込まない。
 
-lint・ビルド・型チェックのスクリプトと CI（`.github/`）は現時点で存在しない。
+lint・ビルドのスクリプトは無い。`playwright-next-article-share-app` には型チェックなどの静的チェック `scripts/check.sh` と、環境を指定して実行する `scripts/run.sh` がある。
 
 ## コマンド
 
@@ -26,6 +26,8 @@ npm test                                         # 全テスト（ヘッドレ�
 npm run test:ui                                  # UI モード
 npm run report                                   # 直近の HTML レポート
 npm run test:smoke                               # @smoke のみ（next-article-share-app のみ）
+./scripts/check.sh                               # 静的チェック（next-article-share-app のみ）
+./scripts/run.sh <local|stg|prod>                # 環境を指定して実行（next-article-share-app のみ。prod は @smoke のみ）
 
 npx playwright test tests/smoke/auth.spec.ts     # ファイル指定
 npx playwright test -g "テスト名の一部"           # テスト名で絞り込み
@@ -49,7 +51,7 @@ BASE_URL=https://example.com/ npm test           # 接続先の切り替え
 | 本番 | （未共有） | `@smoke` のみ | `BASE_URL=<本番> npm run test:smoke` |
 
 - アプリ側の `.env` が Neon（ステージング / 本番の DB）を指している可能性がある。ユーザーの指示なしにアプリをローカル起動してテストを流さない。
-- 本番に向けて書き込み系テストを流さない。書き込み系テストは `fixtures/index.ts` の `WRITABLE_HOSTS`（許可制）に無いホストでは自動でスキップされる。許可リストに本番ホストを足さない。
+- 本番に向けて書き込み系テストを流さない。書き込み系テストは `fixtures/index.ts` の `WRITABLE_HOSTS`（許可制）に無いホストでは自動でスキップされる。許可リストは `environments.json`（local / stg の URL）から作られる。`environments.json` にも許可リストにも本番ホストを足さない。
 - デプロイ契機: アプリ側で `master` への push → ステージング（`deploy-staging.yml`）、GitHub Release の公開 → 本番（`deploy-prod.yml`）。
 
 ## 外部 E2E の設計（next-article-share-app）
