@@ -83,7 +83,7 @@ Playwright（TypeScript） / claude.ai Artifact（テストケース台帳） / 
 
 | ディレクトリ | 内容 |
 | --- | --- |
-| [`common/playwright-next-article-share-app`](common/playwright-next-article-share-app) | next-article-share-app の外部 E2E（Playwright） |
-| [`common/playwright-ec2`](common/playwright-ec2) | デモ EC サイト（tutorialsninja）の E2E |
+| [`e2e/playwright-next-article-share-app`](e2e/playwright-next-article-share-app) | next-article-share-app の外部 E2E（Playwright） |
+| [`e2e/playwright-ec2`](e2e/playwright-ec2) | デモ EC サイト（tutorialsninja）の E2E |
 | [`test-cases/`](test-cases) | アプリごとのリグレッションテストケースの運用ルールと画面イメージ |
 | [`poc/`](poc) | 外部 E2E の計画書と、セキュリティ系ツールの評価計画 |

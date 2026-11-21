@@ -8,7 +8,7 @@ QA・エンジニア・PdM・PM が書く前提。
 
 関連:
 
-- 自動テストの実装: [`common/playwright-next-article-share-app`](../../common/playwright-next-article-share-app)
+- 自動テストの実装: [`e2e/playwright-next-article-share-app`](../../e2e/playwright-next-article-share-app)
 - 外部 E2E の方針: [`poc/next-article-share-app/poc-plan.md`](../../poc/next-article-share-app/poc-plan.md)
 
 ## 列の意味

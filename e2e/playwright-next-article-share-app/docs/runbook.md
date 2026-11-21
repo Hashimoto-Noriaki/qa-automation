@@ -2,7 +2,7 @@
 
 `playwright-next-article-share-app`（next-article-share-app の外部 E2E）の運用手順。初回の環境構築は [setup.md](./setup.md)、テストの書き方は [README](../README.md) を参照。
 
-コマンドはすべて `common/playwright-next-article-share-app/` で実行する。
+コマンドはすべて `e2e/playwright-next-article-share-app/` で実行する。
 
 ## 早見表
 

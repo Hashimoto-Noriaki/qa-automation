@@ -6,7 +6,7 @@
 
 テスト対象アプリのコードを持たない、外部 QA 用リポジトリ。ドキュメント・テスト名は日本語で書かれている。
 
-- `common/` — 独立した Playwright プロジェクト群。ルートに `package.json` は無く（ワークスペースでもない）、コマンドは各プロジェクトのディレクトリで実行する。
+- `e2e/` — 独立した Playwright プロジェクト群。ルートに `package.json` は無く（ワークスペースでもない）、コマンドは各プロジェクトのディレクトリで実行する。
   - `playwright-ec2` — デモ EC サイト（tutorialsninja）の E2E
   - `playwright-next-article-share-app` — 別リポジトリ [next-article-share-app](https://github.com/Hashimoto-Noriaki/next-article-share-app) の外部 E2E
 - `test-cases/` — アプリごとのリグレッションテストケースの運用ルールと画面イメージ。ケースの正本はリポジトリではなく claude.ai の Artifact（テストケース台帳。URL は各 `test-cases/<アプリ名>/README.md`）。Playwright のテスト名は `[ケースID] タイトル` にする。
@@ -63,7 +63,7 @@ BASE_URL=https://example.com/ npm test           # 接続先の切り替え
 - 対象外: パスワードリセット（Gmail）、画像アップロード（Cloudinary）、OAuth（GitHub / Google）。
 - タイムアウトが長いのはサーバーレス環境（Vercel / Cloud Run）のコールドスタート対策。
 
-poc-plan.md の「ディレクトリ構成（案）」は `poc/next-article-share-app/` 配下を想定しているが、実装は `common/playwright-next-article-share-app/` にある。実装済みなのは `@smoke` のシナリオ 1〜3（`tests/smoke/`）と、fixture を使うシナリオ 4・5（`tests/regression/`）。書き込み系テストは `fixtures/index.ts` の `test` を使う（`testUser` は後片付けで退会させ、記事も一緒に削除される）。書き込み系は許可したホスト（`WRITABLE_HOSTS`）でのみ動く。GitHub Actions は未着手。
+poc-plan.md の「ディレクトリ構成（案）」は `poc/next-article-share-app/` 配下を想定しているが、実装は `e2e/playwright-next-article-share-app/` にある。実装済みなのは `@smoke` のシナリオ 1〜3（`tests/smoke/`）と、fixture を使うシナリオ 4・5（`tests/regression/`）。書き込み系テストは `fixtures/index.ts` の `test` を使う（`testUser` は後片付けで退会させ、記事も一緒に削除される）。書き込み系は許可したホスト（`WRITABLE_HOSTS`）でのみ動く。GitHub Actions は未着手。
 
 ## playwright-ec2 の注意点
 

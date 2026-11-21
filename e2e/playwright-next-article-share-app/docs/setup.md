@@ -10,12 +10,12 @@
 | npm | Node.js に同梱 | 依存のインストール |
 | Docker | Docker Desktop など | ローカルでアプリを動かすときの DB（ローカル実行のときだけ） |
 
-このリポジトリのルートには `package.json` が無い。コマンドはすべて `common/playwright-next-article-share-app/` で実行する。
+このリポジトリのルートには `package.json` が無い。コマンドはすべて `e2e/playwright-next-article-share-app/` で実行する。
 
 ## 2. インストール
 
 ```bash
-cd common/playwright-next-article-share-app
+cd e2e/playwright-next-article-share-app
 npm install
 npx playwright install chromium
 ```
