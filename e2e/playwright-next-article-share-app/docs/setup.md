@@ -24,13 +24,21 @@ Linux（CI など）で依存ライブラリが足りないときは `npx playwr
 
 ## 3. 接続先の指定
 
-接続先は環境変数 `BASE_URL` で切り替える（未指定時は `http://localhost:3000`）。
+接続先は `scripts/run.sh` に環境名を渡して切り替える。local / stg の URL は `environments.json` にある。
+
+```bash
+./scripts/run.sh local
+./scripts/run.sh stg
+PROD_URL=<本番の URL> ./scripts/run.sh prod   # @smoke のみ
+```
+
+スクリプトを使わずに、環境変数 `BASE_URL` を直接指定してもよい（未指定時は `http://localhost:3000`）。
 
 ```bash
 BASE_URL=https://article-share-stg.vercel.app npm test
 ```
 
-> **注意**: `.env.example` はあるが、`playwright.config.ts` は `.env` を自動で読み込まない。`.env` に書いても反映されないので、コマンドの前に付けるか `export BASE_URL=...` する。
+> **注意**: `playwright.config.ts` は `.env` を自動で読み込まない。`.env`（`.env.example` をコピーして作る）を読むのは `scripts/run.sh` だけで、使うのは `PROD_URL`。`BASE_URL` は `run.sh` が環境名から決めるので、`.env` に書いても使われない。
 
 | 環境 | `BASE_URL` | 流してよいテスト |
 | --- | --- | --- |
@@ -64,20 +72,21 @@ docker compose down
 
 ### 本番
 
-URL は未共有。本番に向けるときは `@smoke` だけを流す（[runbook](./runbook.md) 参照）。書き込み系テストは `fixtures/index.ts` の `WRITABLE_HOSTS` に無いホストでは自動でスキップされるが、`npm test` ではなく `npm run test:smoke` を使う。
+URL は未共有。本番に向けるときは `@smoke` だけを流す（[runbook](./runbook.md) 参照）。書き込み系テストは `fixtures/index.ts` の `WRITABLE_HOSTS` に無いホストでは自動でスキップされるが、`npm test` ではなく `./scripts/run.sh prod`（必ず `@smoke` のみになる）を使う。
 
 ## 5. 動作確認
 
 まず読み取りだけの `@smoke` で接続できるか確かめる。
 
 ```bash
-BASE_URL=https://article-share-stg.vercel.app npm run test:smoke -- --reporter=list
+./scripts/check.sh                                      # まずテストのコードに問題が無いか（アプリには接続しない）
+./scripts/run.sh stg --grep @smoke --reporter=list
 ```
 
 `[STC-001]` `[AUTH-001]` `[AUTH-002]` の 3 件が passed になれば OK。続けて全テスト（書き込みあり）を流す。
 
 ```bash
-BASE_URL=https://article-share-stg.vercel.app npx playwright test --reporter=list
+./scripts/run.sh stg --reporter=list
 ```
 
 ## 6. あると便利なもの
@@ -92,5 +101,7 @@ BASE_URL=https://article-share-stg.vercel.app npx playwright test --reporter=lis
 | `Executable doesn't exist at ...chromium...` | ブラウザ未インストール。`npx playwright install chromium` |
 | `net::ERR_CONNECTION_REFUSED at http://localhost:3000` | `BASE_URL` 未指定でローカルに向いているが、アプリが起動していない。アプリを起動するか `BASE_URL` を指定する |
 | 書き込み系テストが skipped になる | `BASE_URL` のホストが `WRITABLE_HOSTS` に無い。本番なら正しい挙動。ステージングの URL を打ち間違えていないか確認する |
-| `.env` に書いた `BASE_URL` が効かない | `.env` は読み込まれない（3. 参照） |
+| `.env` に書いた `BASE_URL` が効かない | `.env` を読むのは `scripts/run.sh` だけで、`BASE_URL` は環境名から決まる（3. 参照） |
+| `run.sh prod` で `PROD_URL で指定してください` と出る | `PROD_URL` を環境変数で渡すか、`.env` に書く |
+| `run.sh prod` で `-g は使えません` と出る | 本番は `@smoke` に限定するため grep を受け付けない。ファイル名か `ファイル:行` で絞り込む |
 | ステージングで初回だけタイムアウトする | コールドスタート。もう一度流して再現するか確認する（[runbook](./runbook.md#失敗したとき) 参照） |

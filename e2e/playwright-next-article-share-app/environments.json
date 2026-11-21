@@ -1,0 +1,4 @@
+{
+  "local": "http://localhost:3000",
+  "stg": "https://article-share-stg.vercel.app"
+}
