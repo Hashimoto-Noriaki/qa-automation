@@ -18,7 +18,7 @@ Web アプリ [next-article-share-app](https://github.com/Hashimoto-Noriaki/next
 | テスト手順書 | 環境と領域を選ぶと、準備 → 各ケースの手順・期待結果 → 後片付けの手順書をケースから自動で組み立てる |
 | 実施記録 | リリースごとにリグレッションテスト（優先度で対象を選ぶ）・UAT（変更した領域で選ぶ）を作り、OK / NG / 保留を記録する |
 
-最新の内容は台帳を見る（閲覧には claude.ai へのサインインが必要）。運用ルールは [`test-cases/next-article-share-app/README.md`](test-cases/next-article-share-app/README.md)。
+最新の内容は台帳を見る（閲覧には claude.ai へのサインインが必要）。運用ルールと、ケース ID と自動テストの対応表（registry）は [`e2e/playwright-next-article-share-app/test-management/`](e2e/playwright-next-article-share-app/test-management/README.md)。
 
 ## このリポジトリで示していること
 
@@ -83,7 +83,6 @@ Playwright（TypeScript） / claude.ai Artifact（テストケース台帳） / 
 
 | ディレクトリ | 内容 |
 | --- | --- |
-| [`e2e/playwright-next-article-share-app`](e2e/playwright-next-article-share-app) | next-article-share-app の外部 E2E（Playwright） |
+| [`e2e/playwright-next-article-share-app`](e2e/playwright-next-article-share-app) | next-article-share-app の外部 E2E（Playwright）。テストケースの運用ルールと registry は `test-management/` |
 | [`e2e/playwright-ec2`](e2e/playwright-ec2) | デモ EC サイト（tutorialsninja）の E2E |
-| [`test-cases/`](test-cases) | アプリごとのリグレッションテストケースの運用ルールと画面イメージ |
 | [`poc/`](poc) | 外部 E2E の計画書と、セキュリティ系ツールの評価計画 |

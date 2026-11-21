@@ -3,7 +3,7 @@
 [next-article-share-app](https://github.com/Hashimoto-Noriaki/next-article-share-app) の外部 E2E テストを Playwright で自動化するプロジェクト。
 方針は [PoC 計画](../../poc/next-article-share-app/poc-plan.md) を参照。
 
-テストケースの一覧（どれを自動化するか・実装状況）は **[テストケース台帳](https://claude.ai/artifact/MgNuPUxHXpuNYDJKb2Zy83)** で管理している。テスト名は `[ケースID] タイトル` にする（例: `[AUTH-002] 誤った認証情報でログインするとエラーが表示される`）。
+テストケースの一覧（どれを自動化するか）は **[テストケース台帳](https://claude.ai/artifact/MgNuPUxHXpuNYDJKb2Zy83)**、自動テストの実装状況（ケース ID → テストのファイル）は [`test-management/`](test-management/README.md) の registry で管理している。テスト名は `[ケースID] タイトル` にする（例: `[AUTH-002] 誤った認証情報でログインするとエラーが表示される`）。
 
 ## ドキュメント
 
@@ -150,6 +150,7 @@ playwright-next-article-share-app/
     lib/inspect-tests.js # check.sh の 3・4 の判定
   fixtures/              # テストデータの用意と後片付け（testUser・loggedInPage）
   helpers/               # 画面操作の関数（認証・記事）
+  test-management/       # テストケースの運用ルールと、機能ごとの TEST_CASE_ID_REGISTRY.md
   tests/
     smoke/               # @smoke: 本番でも流せる読み取り系
     regression/          # 書き込みあり: ローカル・ステージングのみ
