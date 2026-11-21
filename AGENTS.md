@@ -51,7 +51,7 @@ BASE_URL=https://example.com/ npm test           # 接続先の切り替え
 | 本番 | （未共有） | `@smoke` のみ | `BASE_URL=<本番> npm run test:smoke` |
 
 - アプリ側の `.env` が Neon（ステージング / 本番の DB）を指している可能性がある。ユーザーの指示なしにアプリをローカル起動してテストを流さない。
-- 本番に向けて書き込み系テストを流さない。書き込み系テストは `fixtures/index.ts` の `WRITABLE_HOSTS`（許可制）に無いホストでは自動でスキップされる。許可リストに本番ホストを足さない。
+- 本番に向けて書き込み系テストを流さない。書き込み系テストは `fixtures/index.ts` の `WRITABLE_HOSTS`（許可制）に無いホストでは自動でスキップされる。許可リストは `environments.json`（local / stg の URL）から作られる。`environments.json` にも許可リストにも本番ホストを足さない。
 - デプロイ契機: アプリ側で `master` への push → ステージング（`deploy-staging.yml`）、GitHub Release の公開 → 本番（`deploy-prod.yml`）。
 
 ## 外部 E2E の設計（next-article-share-app）

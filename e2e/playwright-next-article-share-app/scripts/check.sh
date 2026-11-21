@@ -4,8 +4,8 @@
 #   ./scripts/check.sh
 #
 # 1. 型チェック（tsc --noEmit）
-# 2. test.only の残り
-# 3. tests/smoke/ が書き込み系の fixtures を import していないか（本番で流すため）
+# 2. .only の残り（Playwright の --forbid-only で判定）
+# 3. @smoke のテストが書き込み系の fixture を使っていないか（本番で流すため）
 # 4. テスト名が [ケースID] で始まっているか（ID 未採番のテストがあるため、今は警告のみ）
 set -uo pipefail
 
@@ -14,58 +14,57 @@ cd "$(dirname "$0")/.."
 errors=0
 warnings=0
 
-ok()   { echo "  OK   $1"; }
-ng()   { echo "  NG   $1"; errors=$((errors + 1)); }
-warn() { echo "  WARN $1"; warnings=$((warnings + 1)); }
+ok()     { echo "  OK   $1"; }
+ng()     { echo "  NG   $1"; errors=$((errors + 1)); }
+warn()   { echo "  WARN $1"; warnings=$((warnings + 1)); }
+indent() { grep -v '^npm warn' | sed 's/^/       /'; }
+
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
 
 echo "[1/4] 型チェック"
-if out=$(npx tsc --noEmit -p . 2>&1); then
+if npx tsc --noEmit -p . >"$tmp/tsc.txt" 2>&1; then
   ok "型エラーなし"
 else
-  echo "$out" | grep -v '^npm warn' | sed 's/^/       /'
+  indent <"$tmp/tsc.txt"
   ng "型エラーがあります"
 fi
 
-echo "[2/4] test.only の残り"
-if out=$(grep -rnE '\b(test|describe)\.only\(' tests); then
-  echo "$out" | sed 's/^/       /'
-  ng "test.only / describe.only が残っています"
+echo "[2/4] .only の残り"
+if npx playwright test --list --forbid-only >"$tmp/only.txt" 2>&1; then
+  ok ".only なし"
 else
-  ok "test.only なし"
+  indent <"$tmp/only.txt"
+  ng ".only が残っているか、テスト一覧を取得できませんでした（上の出力を確認してください）"
 fi
 
-echo "[3/4] @smoke（tests/smoke/）に書き込み系の fixtures が入っていないか"
-if out=$(grep -rnE "from ['\"][./]*fixtures" tests/smoke); then
-  echo "$out" | sed 's/^/       /'
-  ng "tests/smoke/ は本番でも流すため、fixtures ではなく @playwright/test から import してください"
+# 3 と 4 はテスト一覧（JSON）を使う
+list_ok=true
+if ! npx playwright test --list --reporter=json >"$tmp/list.json" 2>"$tmp/list.err"; then
+  list_ok=false
+elif ! node scripts/lib/inspect-tests.js "$tmp/list.json" >"$tmp/inspect.txt" 2>"$tmp/list.err"; then
+  list_ok=false
+fi
+
+echo "[3/4] @smoke のテストが書き込み系の fixture を使っていないか"
+if ! $list_ok; then
+  indent <"$tmp/list.err"
+  ng "テスト一覧を調べられませんでした（上の出力を確認してください）"
+elif grep -q '^SMOKE_NG ' "$tmp/inspect.txt"; then
+  grep '^SMOKE_NG ' "$tmp/inspect.txt" | sed 's/^SMOKE_NG //' | indent
+  ng "@smoke は本番でも流すため、fixtures ではなく @playwright/test から import してください"
 else
-  ok "fixtures の import なし"
+  ok "書き込み系の fixture の使用なし"
 fi
 
 echo "[4/4] テスト名が [ケースID] で始まっているか"
-if ! list=$(npx playwright test --list --reporter=json 2>/dev/null); then
-  ng "テスト一覧を取得できませんでした（npx playwright test --list で確認してください）"
+if ! $list_ok; then
+  ng "テスト一覧を調べられませんでした（3 の出力を確認してください）"
+elif grep -q '^NO_ID ' "$tmp/inspect.txt"; then
+  grep '^NO_ID ' "$tmp/inspect.txt" | sed 's/^NO_ID //' | indent
+  warn "ケース ID の無いテストがあります（台帳で ID を振ってテスト名を [ID] タイトル にしてください）"
 else
-  missing=$(echo "$list" | node -e '
-    let input = "";
-    process.stdin.on("data", (c) => (input += c)).on("end", () => {
-      const out = [];
-      const walk = (suite) => {
-        for (const spec of suite.specs ?? []) {
-          if (!/^\[[A-Z]+-\d{3}\] /.test(spec.title)) out.push(`${spec.file}:${spec.line} ${spec.title}`);
-        }
-        (suite.suites ?? []).forEach(walk);
-      };
-      JSON.parse(input).suites.forEach(walk);
-      console.log(out.join("\n"));
-    });
-  ')
-  if [[ -n "$missing" ]]; then
-    echo "$missing" | sed 's/^/       /'
-    warn "ケース ID の無いテストがあります（台帳で ID を振ってテスト名を [ID] タイトル にしてください）"
-  else
-    ok "すべてのテスト名に ID あり"
-  fi
+  ok "すべてのテスト名に ID あり"
 fi
 
 echo
