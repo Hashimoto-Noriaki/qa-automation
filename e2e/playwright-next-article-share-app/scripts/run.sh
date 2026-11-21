@@ -36,7 +36,7 @@ load_dotenv() {
     if [[ "$value" =~ ^\"(.*)\"$ || "$value" =~ ^\'(.*)\'$ ]]; then
       value="${BASH_REMATCH[1]}"
     fi
-    [[ -z "${!key:-}" ]] && export "$key=$value"
+    if [[ -z "${!key:-}" ]]; then export "$key=$value"; fi
   done < .env
 }
 
@@ -49,7 +49,7 @@ env_url() {
 env_name="$1"
 shift
 
-[[ -f .env ]] && load_dotenv
+if [[ -f .env ]]; then load_dotenv; fi
 
 args=()
 case "$env_name" in

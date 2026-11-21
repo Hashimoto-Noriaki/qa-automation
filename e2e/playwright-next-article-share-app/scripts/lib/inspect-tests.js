@@ -55,7 +55,7 @@ if (smokeFiles.size === 0) fail('@smoke のテストが 1 件も見つかりま�
 // import / export from / require / 動的 import の相対パスを拾う（複数行の import も対象）
 const IMPORT_RE = /(?:\bfrom\s*|\bimport\s*\(?\s*|\brequire\s*\(\s*)['"](\.{1,2}\/[^'"]+)['"]/g;
 // fixture の定義（test.extend / base.extend）
-const EXTEND_RE = /\.extend\s*[<(]/;
+const EXTEND_RE = /\b(?:test|base)\.extend\s*[<(]/;
 
 const resolveImport = (fromFile, spec) => {
   const base = path.resolve(path.dirname(fromFile), spec);
