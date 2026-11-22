@@ -8,10 +8,11 @@
 
 | やりたいこと | コマンド |
 | --- | --- |
-| ステージングで全テスト | `BASE_URL=https://article-share-stg.vercel.app npx playwright test --reporter=list` |
-| 本番で smoke | `BASE_URL=<本番の URL> npm run test:smoke -- --reporter=list` |
-| ローカルで全テスト | `npx playwright test --reporter=list`（アプリの起動が必要） |
-| ケース ID で 1 件だけ | `npx playwright test -g "AUTH-002"` |
+| テストを流す前の静的チェック | `./scripts/check.sh` |
+| ステージングで全テスト | `./scripts/run.sh stg --reporter=list` |
+| 本番で smoke | `PROD_URL=<本番の URL> ./scripts/run.sh prod --reporter=list` |
+| ローカルで全テスト | `./scripts/run.sh local --reporter=list`（アプリの起動が必要） |
+| ケース ID で 1 件だけ | `./scripts/run.sh stg -g "AUTH-002"`（本番では `-g` は使えない。ファイル名か `ファイル:行` で指定する） |
 | 直近のレポートを開く | `npm run report` |
 | trace を開く | `npx playwright show-trace test-results/<テスト>/trace.zip` |
 
@@ -19,8 +20,8 @@
 
 ## 守ること
 
-- **本番では `@smoke` だけを流す**（`npm run test:smoke`）。`npm test` を本番に向けない。書き込み系は `WRITABLE_HOSTS` で自動スキップされるが、それは付け忘れ対策の保険であって、運用で頼らない
-- **`WRITABLE_HOSTS`（`fixtures/index.ts`）に本番ホストを足さない**
+- **本番では `@smoke` だけを流す**（`./scripts/run.sh prod`。必ず `--grep @smoke` が付き、`-g` などの grep 指定はエラーになる）。`npm test` を本番に向けない。書き込み系は `WRITABLE_HOSTS` で自動スキップされるが、それは付け忘れ対策の保険であって、運用で頼らない
+- **`environments.json` と `WRITABLE_HOSTS`（`fixtures/index.ts`）に本番ホストを足さない**（`WRITABLE_HOSTS` は `environments.json` から作られる）
 - **アプリをローカル起動する前に、アプリ側 `.env` の `DATABASE_URL` が Neon を指していないか確認する**（[setup.md](./setup.md#ローカル)）
 - **DB / Prisma には触らない**。データの作成・削除は UI からだけ行う
 - テストの成否は接続先とセットで記録する（「ステージングで passed」のように）
@@ -41,7 +42,7 @@ GitHub Actions からの自動実行は未着手（[poc-plan.md](../../../poc/ne
 2. 全テストを流す
 
    ```bash
-   BASE_URL=https://article-share-stg.vercel.app npx playwright test --reporter=list
+   ./scripts/run.sh stg --reporter=list
    ```
 
 3. 失敗があれば [失敗したとき](#失敗したとき) に沿って切り分ける
@@ -54,7 +55,7 @@ GitHub Actions からの自動実行は未着手（[poc-plan.md](../../../poc/ne
 2. `@smoke` だけを流す
 
    ```bash
-   BASE_URL=<本番の URL> npm run test:smoke -- --reporter=list
+   PROD_URL=<本番の URL> ./scripts/run.sh prod --reporter=list
    ```
 
 3. 書き込みが必要なケース（台帳で prod が `manual`）は UAT として手で確認する。固定テストアカウントを使い、作ったデータはその場で削除する
@@ -65,7 +66,9 @@ GitHub Actions からの自動実行は未着手（[poc-plan.md](../../../poc/ne
 ### 1. 再現するか確かめる
 
 ```bash
-BASE_URL=<同じ接続先> npx playwright test -g "<ケース ID かテスト名の一部>" --reporter=list
+./scripts/run.sh <同じ環境> -g "<ケース ID かテスト名の一部>" --reporter=list
+# 本番は -g が使えないので、ファイルと行で指定する
+PROD_URL=<本番の URL> ./scripts/run.sh prod tests/smoke/auth.spec.ts:9 --reporter=list
 ```
 
 - **2 回目で通る**: コールドスタートや一時的な遅延の可能性が高い。初回のエラーが `Timeout` / `net::ERR_*` なら様子見でよい。何度も起きるなら flaky として Issue にする
@@ -115,5 +118,5 @@ trace では操作ごとの画面・DOM・ネットワーク・コンソール�
 
 ## 環境を増やすとき
 
-- 書き込みを許可する環境なら `fixtures/index.ts` の `WRITABLE_HOSTS` にホストを足す（本番は足さない）
+- 書き込みを許可する環境なら `environments.json` に URL を足す。`WRITABLE_HOSTS` と `scripts/run.sh` の環境名はここから作られる（本番は足さない。`run.sh` の環境名を増やすときは `case` にも足す）
 - この runbook・[setup.md](./setup.md)・AGENTS.md の対象環境の表を更新する
