@@ -9,6 +9,9 @@
     "report": "playwright show-report",
     "check": "./scripts/check.sh"
   },
+  "engines": {
+    "node": ">=20.1"
+  },
   "keywords": [],
   "type": "commonjs",
   "devDependencies": {
