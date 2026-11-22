@@ -64,7 +64,7 @@ case "$env_name" in
     # Playwright は最後の --grep だけを使うため、本番では利用者の grep 指定を受け付けない
     for arg in "$@"; do
       case "$arg" in
-        -g | -g* | --grep | --grep=* | -G | -G* | --grep-invert | --grep-invert=*)
+        -g* | --grep | --grep=* | -G | -G* | --grep-invert | --grep-invert=*)
           echo "エラー: 本番では @smoke に限定するため、$arg は使えません（ファイル名やテストの行番号で絞り込んでください）" >&2
           exit 1
           ;;
