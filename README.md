@@ -20,6 +20,16 @@ Web アプリ [next-article-share-app](https://github.com/Hashimoto-Noriaki/next
 
 最新の内容は台帳を見る（閲覧には claude.ai へのサインインが必要）。運用ルールと、ケース ID と自動テストの対応表（registry）は [`e2e/playwright-next-article-share-app/test-management/`](e2e/playwright-next-article-share-app/test-management/README.md)。
 
+## 対象環境
+
+| 環境 | URL | 流すテスト |
+| --- | --- | --- |
+| ステージング | https://article-share-stg.vercel.app | 全テスト（書き込みあり） |
+| 本番 | 未リリース | `@smoke` のみ（読み取りだけ） |
+| ローカル | http://localhost:3000 | 全テスト |
+
+テストの実行コマンドは [`e2e/playwright-next-article-share-app`](e2e/playwright-next-article-share-app) を参照（例: `./scripts/run.sh stg`）。URL を変えるときは `environments.json` も直す（`run.sh` と書き込み許可リストはそちらを読む）。
+
 ## このリポジトリで示していること
 
 ### 1. 環境ごとのテスト戦略（どこを自動化し、どこを人が見るか）
@@ -69,7 +79,7 @@ Web アプリ [next-article-share-app](https://github.com/Hashimoto-Noriaki/next
 | --- | --- |
 | テスト戦略・自動 / 手動の判断基準 | ✅ 決定 |
 | リグレッションテストケース | 57 件（レビュー中） |
-| 自動テスト | 5 件実装済（うちケース ID 対応済み 3 件。自動化の対象は 49 件） |
+| 自動テスト | 6 件実装済（うちケース ID 対応済み 4 件。自動化の対象は 49 件） |
 | リグレッションテストの実施 | ⬜ 未実施（ステージングで初回実施予定） |
 | 本番 | 未リリース（リリース後は読み取り系の `@smoke` を流す前提で設計済み） |
 | GitHub Actions でのデプロイ後の自動実行 | ⬜ 未着手 |

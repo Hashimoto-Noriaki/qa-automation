@@ -84,7 +84,7 @@ PoC 後の候補: 下書き、コメント、いいね、ストック、通知�
 
 1. Playwright の雛形を作り、ローカルでシナリオ 1〜3（`@smoke`）を通す
 2. fixture（ユーザー作成＋退会、記事作成＋削除）を作り、シナリオ 4・5 を通す
-3. GitHub Actions のワークフローを追加（まずは `workflow_dispatch` で `BASE_URL` を手入力）
+3. GitHub Actions のワークフローを追加（まずは `workflow_dispatch` でステージングのみ。`BASE_URL` は手入力せず `scripts/run.sh stg` で environments.json から取る）
 4. ステージングに向けて実行し、デプロイ環境特有の問題（タイムアウト・データ残り）を確認する（2026-11-14: シナリオ 1〜5 がステージングで通過）
 5. アプリ側に `repository_dispatch` を追加し、デプロイ後に自動で回るようにする
 
