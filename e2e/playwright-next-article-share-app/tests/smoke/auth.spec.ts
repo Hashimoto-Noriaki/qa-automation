@@ -15,4 +15,12 @@ test.describe('認証', { tag: '@smoke' }, () => {
 
     await expect(page.getByText('メールアドレスまたはパスワードが間違っています')).toBeVisible();
   });
+
+  test('[AUTH-003] ログイン画面が表示される', async ({ page }) => {
+    await page.goto('/login');
+
+    await expect(page.getByPlaceholder('メールアドレス')).toBeVisible();
+    await expect(page.getByPlaceholder('パスワード')).toBeVisible();
+    await expect(page.locator('button[type="submit"]').filter({ hasText: 'ログイン' })).toBeVisible();
+  });
 });
