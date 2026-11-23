@@ -65,7 +65,7 @@ BASE_URL=https://example.com/ npm test           # 接続先の切り替え
 - 対象外: パスワードリセット（Gmail）、画像アップロード（Cloudinary）、OAuth（GitHub / Google）。
 - タイムアウトが長いのはサーバーレス環境（Vercel / Cloud Run）のコールドスタート対策。
 
-poc-plan.md の「ディレクトリ構成（案）」は `poc/next-article-share-app/` 配下を想定しているが、実装は `e2e/playwright-next-article-share-app/` にある。実装済みなのは `@smoke` のシナリオ 1〜3（`tests/smoke/`）と、fixture を使うシナリオ 4・5（`tests/regression/`）。書き込み系テストは `fixtures/index.ts` の `test` を使う（`testUser` は後片付けで退会させ、記事も一緒に削除される）。書き込み系は許可したホスト（`WRITABLE_HOSTS`）でのみ動く。GitHub Actions は未着手。
+poc-plan.md の「ディレクトリ構成（案）」は `poc/next-article-share-app/` 配下を想定しているが、実装は `e2e/playwright-next-article-share-app/` にある。実装済みなのは `@smoke` のシナリオ 1〜3（`tests/smoke/`）と、fixture を使うシナリオ 4・5（`tests/regression/`）。書き込み系テストは `fixtures/index.ts` の `test` を使う（`testUser` は後片付けで退会させ、記事も一緒に削除される）。書き込み系は許可したホスト（`WRITABLE_HOSTS`）でのみ動く。GitHub Actions はステージング向けの手動実行（`.github/workflows/e2e-next-article-share-app.yml`、`workflow_dispatch`）のみ。デプロイ後の自動起動と本番は未着手。
 
 ## playwright-ec2 の注意点
 
