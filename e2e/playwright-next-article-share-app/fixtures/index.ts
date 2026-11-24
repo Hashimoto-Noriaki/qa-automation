@@ -52,7 +52,9 @@ export const test = base.extend<Fixtures & InternalFixtures>({
     await use(user);
 
     // 後片付け: テスト本体のセッション状態に依存しないよう、認証情報ごとに新しいコンテキストで行う。
-    // テスト終了後に判定するので、テスト中に登録が終わらず遅れて完了した場合も拾える
+    // テスト終了後に判定するので、テスト中に登録が終わらず遅れて完了した場合も拾える。
+    // 1 件失敗しても残りは片付けるため、エラーは集めて最後にまとめて投げる
+    const errors: string[] = [];
     for (const target of [user, ..._cleanupTargets]) {
       const context = await browser.newContext({ baseURL });
       try {
@@ -60,9 +62,14 @@ export const test = base.extend<Fixtures & InternalFixtures>({
         if (await tryLogin(page, target)) {
           await withdraw(page);
         }
+      } catch (e) {
+        errors.push(`${target.email}: ${e instanceof Error ? e.message : String(e)}`);
       } finally {
         await context.close();
       }
+    }
+    if (errors.length) {
+      throw new Error(`後片付けに失敗した認証情報があります（データが残っている可能性あり）\n${errors.join('\n')}`);
     }
   },
 

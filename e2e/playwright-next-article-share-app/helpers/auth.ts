@@ -63,15 +63,20 @@ export async function login(page: Page, user: TestUser) {
 /**
  * ログインを試み、成功したかを返す（後片付け用）。
  * 退会済み・未登録のユーザーならエラー表示になるので false。
+ * どちらにもならないとき（文言の変更・別のエラーなど）は、待ち続けずに timeout で例外を投げる。
+ * 既定の 30 秒はサーバーレスのコールドスタートを見込んだ値（playwright.config.ts の navigationTimeout と同じ）
  */
-export async function tryLogin(page: Page, user: TestUser): Promise<boolean> {
+export async function tryLogin(page: Page, user: TestUser, timeout = 30_000): Promise<boolean> {
   await submitLogin(page, user);
   const error = page.getByText('メールアドレスまたはパスワードが間違っています');
-  await Promise.race([
-    page.waitForURL((url) => url.pathname !== '/login'),
-    error.waitFor(),
-  ]);
-  return new URL(page.url()).pathname !== '/login';
+  const result = await Promise.race([
+    page.waitForURL((url) => url.pathname !== '/login', { timeout }).then(() => 'loggedIn' as const),
+    error.waitFor({ timeout }).then(() => 'rejected' as const),
+  ]).catch(() => 'unknown' as const);
+  if (result === 'unknown') {
+    throw new Error(`ログインの結果を判定できませんでした（${timeout}ms 待機、URL: ${page.url()}）`);
+  }
+  return result === 'loggedIn';
 }
 
 /** ログアウトボタンは記事一覧のヘッダーにしかないので、先に /articles へ移動する */
