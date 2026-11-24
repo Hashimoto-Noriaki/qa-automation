@@ -1,5 +1,5 @@
 import { test, expect } from '../../fixtures';
-import { logout, submitSignup, tryLogin } from '../../helpers/auth';
+import { createPassword, logout, submitSignup, tryLogin } from '../../helpers/auth';
 
 // 本番では流さない（台帳で対象外）。チェックが壊れていると登録されてしまうため、
 // 書き込み許可ホストに限定する testUser の fixture を使う。
@@ -15,7 +15,7 @@ test('[AUTH-005] 新規登録の入力チェックでエラーが表示される
   });
 
   await test.step('パスワードが 8 文字未満だとエラーが表示される', async () => {
-    const shortPassword = { ...testUser, password: 'E2e123!' }; // 7 文字（境界値）
+    const shortPassword = { ...testUser, password: createPassword(7) }; // 7 文字（境界値）
     cleanupAlso(shortPassword);
     await submitSignup(page, shortPassword);
     await expect(page.getByText('パスワードは8文字以上にしてください')).toBeVisible();
@@ -58,7 +58,7 @@ test('[AUTH-005] 新規登録の入力チェックでエラーが表示される
 
 test('[AUTH-006] 登録済みのメールアドレスでは新規登録できない', async ({ loggedInPage: page, testUser, cleanupAlso }) => {
   // 同じメールアドレス・別のパスワード。登録されてしまったら、このパスワードでログインできるようになる
-  const duplicate = { name: 'e2e-dup', email: testUser.email, password: 'E2eOther1234!' };
+  const duplicate = { name: 'e2e-dup', email: testUser.email, password: createPassword(12) };
   cleanupAlso(duplicate);
   await logout(page);
 

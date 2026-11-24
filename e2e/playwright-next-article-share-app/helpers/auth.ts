@@ -11,11 +11,26 @@ export function uniqueId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
+/**
+ * テスト用のパスワードを実行ごとに作る。
+ * パスワードらしい文字列をコードに直接書くと、秘密情報のスキャン（GitGuardian）に誤検知されるため。
+ * 大文字・小文字・数字・記号を必ず 1 文字ずつ含め、残りを英小文字と数字で埋める。
+ */
+export function createPassword(length: number): string {
+  const required = 'Aa1!';
+  if (length < required.length) {
+    throw new Error(`パスワードは ${required.length} 文字以上で作ってください（指定: ${length}）`);
+  }
+  const chars = 'abcdefghijkmnpqrstuvwxyz23456789';
+  const rest = Array.from({ length: length - required.length }, () => chars[Math.floor(Math.random() * chars.length)]);
+  return required + rest.join('');
+}
+
 export function createTestUser(): TestUser {
   return {
     name: 'e2e-user',
     email: `e2e-${uniqueId()}@example.com`,
-    password: 'E2eTest1234!',
+    password: createPassword(12),
   };
 }
 
