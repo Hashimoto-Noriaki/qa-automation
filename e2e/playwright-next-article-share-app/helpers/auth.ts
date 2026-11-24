@@ -19,12 +19,17 @@ export function createTestUser(): TestUser {
   };
 }
 
-export async function signup(page: Page, user: TestUser) {
+/** 新規登録フォームを送信する（成功は待たない。入力チェックのテスト用） */
+export async function submitSignup(page: Page, user: TestUser) {
   await page.goto('/signup');
   await page.getByPlaceholder('例)山田太郎(ニックネーム可)').fill(user.name);
   await page.getByPlaceholder('メールアドレス').fill(user.email);
   await page.getByPlaceholder('パスワード').fill(user.password);
   await page.locator('button[type="submit"]').filter({ hasText: '新規登録' }).click();
+}
+
+export async function signup(page: Page, user: TestUser) {
+  await submitSignup(page, user);
   await page.waitForURL((url) => url.pathname !== '/signup');
 }
 
